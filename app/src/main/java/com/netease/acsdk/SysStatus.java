@@ -11,7 +11,7 @@ import com.netease.unidbgtestdemo.BuildConfig;
 public class SysStatus {
 
     public static void getIdResult() {
-        String id = utils.runShellCMD("id");
+        String id = Utils.runShellCMD("id");
         Log.d(TAG, "getIdResult:" + id);
     }
     public static void getAppStaticDebugFlag(Application application) {

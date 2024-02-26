@@ -15,6 +15,7 @@ import android.os.FileObserver;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
@@ -53,14 +54,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.netease.acsdk.SysStatus;
+import com.netease.acsdk.Utils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "UnidbgTestDemo";
     private static Application application;
     private static MainActivity activity;
-    private MyHandler mHandler;
+    private static MyHandler mHandler;
     private TextView tvLog;
+    private EditText etTestPaths;
     static {
         System.loadLibrary("nativetest");
     }
@@ -71,6 +77,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         activity = this;
 
+        XXPermissions.with(this).permission(Permission.Group.STORAGE)
+                .request(new OnPermissionCallback() {
+                    @Override
+                    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                        if (!allGranted) {
+                            toast("获取部分权限成功，但部分权限未正常授予");
+                            return;
+                        }
+                        toast("获取存储卡权限成功");
+                    }
+
+                    @Override
+                    public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+                        if (doNotAskAgain) {
+                            toast("被永久拒绝授权，请手动授予存储卡权限");
+                            // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                            XXPermissions.startPermissionActivity(activity, permissions);
+                        } else {
+                            toast("获取存储卡权限失败");
+                        }
+                    }
+                });
+
         mHandler = new MyHandler(this);
         Button btnTest = findViewById(R.id.btnTest);
         btnTest.setOnClickListener(this);
@@ -79,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvLog = (TextView)findViewById(R.id.tvLog);
         Button btnClearLog = findViewById(R.id.btnClearLog);
         btnClearLog.setOnClickListener(this);
+        findViewById(R.id.btnAccessTestPaths).setOnClickListener(this);
+        etTestPaths = findViewById(R.id.etTestPaths);
 
         application = getApplication();
 
@@ -89,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "pkgName:" + usingRefJava());
     }
 
+    public void toast(String content) {
+        Toast.makeText(this, content, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public void onClick(View view) {
@@ -104,7 +138,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnClearLog:
                 onClearLog();
                 break;
+            case R.id.btnAccessTestPaths:
+                onBtnAccessPathTest();
+                break;
         }
+    }
+
+    private void onBtnAccessPathTest() {
+        String paths;
+        String cfgTestFilePathFile = "/sdcard/tsPathsExist";
+        String pathFromCfgFile = Utils.readAllFileContext(cfgTestFilePathFile);
+        if (pathFromCfgFile.isEmpty()) {
+            paths = cfgTestFilePathFile;
+        } else {
+            paths = pathFromCfgFile;
+            etTestPaths.setText(paths);
+        }
+        String[] splits = paths.split(";");
+        StringBuilder sb = new StringBuilder();
+        for(String split:splits){
+            String results = Utils.accessTestPaths(split);
+            sb.append(split).append(" ========== ").append(results.equals("0")).append("\r\n");
+        }
+        sendLogData("test file exist", sb.substring(0, sb.length() - 1));
+    }
+
+    public static void sendLogData(String funcName, String data) {
+        Message msg = new Message();
+        msg.what = MyHandler.LOG_DATA;
+        msg.obj = "----------" + funcName + "----------\r\n" + data;
+        MainActivity.mHandler.sendMessage(msg);
     }
 
     private static void onBtnTest() {

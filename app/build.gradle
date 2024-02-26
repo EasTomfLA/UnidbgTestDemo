@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdk 28
+    compileSdk 29
 
     signingConfigs {
         liowmark {
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "com.netease.unidbgtestdemo"
         minSdk 15
-        targetSdk 33
+        targetSdk 30
         versionCode 1
         versionName "1.0"
 
@@ -58,5 +58,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    implementation 'com.github.getActivity:XXPermissions:18.6'
 
 }

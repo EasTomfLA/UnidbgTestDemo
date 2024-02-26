@@ -231,3 +231,14 @@ jint JNI_OnLoad(JavaVM* vm, void* nothing)
 extern "C" JNIEXPORT void exportFunction() {
     LOGD("hello im exportFunction");
 }
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_com_netease_acsdk_Utils_accessTest(JNIEnv *env, jclass clazz, jstring path) {
+    const char* pPath = env->GetStringUTFChars(path, NULL);
+
+    int accRet = access(pPath, F_OK);
+    LOGD("access %s ret:%d", pPath, accRet);
+    char tmp[0x10] = {0};
+    sprintf(tmp, "%d", accRet);
+    return env->NewStringUTF(tmp);
+}
