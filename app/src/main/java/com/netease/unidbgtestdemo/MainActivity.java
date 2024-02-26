@@ -17,6 +17,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -150,8 +152,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void onNewLog(String data) {
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        MainActivity.this.tvLog.append("\n" + formatter.format(date) + "\n" + data);
-        MainActivity.this.tvLog.append("\n----------msg end----------\n");
+        // 1
+        tvLog.setMovementMethod(ScrollingMovementMethod.getInstance());
+//        tvLog.setScrollbarFadingEnabled(false);//滚动条一直显示
+//        String text = tvLog.getText().toString().trim();
+//        StringBuilder stringBuffer = new StringBuilder();
+//        StringBuilder append = stringBuffer.append(text)
+//                .append("\n" + formatter.format(date) + "\n" + data)
+//                .append("\n----------msg end----------\n")
+//                .append("\n");
+//        tvLog.setText(append);
+//        int offset = getTextViewContentHeight(tvLog);
+//        Log.d(TAG, "offset:" + offset + " tvHeight:" +tvLog.getHeight());
+//        if (offset > tvLog.getHeight()) {
+//            tvLog.scrollTo(0, offset - tvLog.getHeight());
+//        }
+        // 2
+//        StringBuilder stringBuffer = new StringBuilder();
+//        StringBuilder append = stringBuffer
+//                .append("\n" + formatter.format(date) + "\n" + data)
+//                .append("\n----------msg end----------\n")
+//                .append("\n");
+//        tvLog.append(append);
+//        int offset=tvLog.getLineCount()*tvLog.getLineHeight();
+//        if(offset>tvLog.getHeight()){
+//            tvLog.scrollTo(0,offset-tvLog.getHeight());
+//        }
+        // 3
+        StringBuilder stringBuffer = new StringBuilder();
+        StringBuilder append = stringBuffer
+                .append("\n" + formatter.format(date) + "\n" + data)
+                .append("\n----------msg end----------\n")
+                .append("\n");
+        tvLog.append(append);
+        Log.d(TAG, "message:" + data);
+    }
+
+    private int getTextViewContentHeight(TextView textView) {
+        Layout layout = textView.getLayout();
+        int desired = layout.getLineTop(textView.getLineCount());
+        int padding = textView.getCompoundPaddingTop() + textView.getCompoundPaddingBottom();
+        Log.d(TAG, "desired:" + desired+ " padding:" + padding);
+        return desired + padding;
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -163,15 +205,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "message == null");
                     return;
                 }
-                SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-                Date date = new Date(System.currentTimeMillis());
-                MainActivity.this.tvLog.append("\n" + formatter.format(date) + content);
-                MainActivity.this.tvLog.append("\n----------msg end----------\n");
-//                int offset=tv_content.getLineCount()*tv_content.getLineHeight();
-//                if (offset > tv_content.getHeight()) {
-//                    tv_content.scrollTo(0, offset - tv_content.getHeight());
-//                }
-                Log.d(TAG, "message:" + content);
+                Message msg = new Message();
+                msg.what = MyHandler.LOG_DATA;
+                msg.obj = content;
+                mHandler.sendMessage(msg);
             }
         }
     };
