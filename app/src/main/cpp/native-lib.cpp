@@ -203,18 +203,23 @@ static int registerNatives(JNIEnv* env)
     }
     return JNI_TRUE;
 }
-
+JavaVM *gJvm;
+jclass gClzMainActivity;
 jint JNI_OnLoad(JavaVM* vm, void* nothing)
 {
     JNIEnv* env = NULL;
     jint result = -1;
-
+    gJvm = vm;
     LOGD("JNI_OnLoad");
     if ((vm)->GetEnv((void**)&env, JNI_VERSION_1_4) != JNI_OK) {
         LOGD("ERROR: GetEnv failed");
         goto bail;
     }
 
+    if (gClzMainActivity == nullptr) {
+        jclass clz = env->FindClass("com/netease/unidbgtestdemo/MainActivity");
+        gClzMainActivity = static_cast<jclass>(env->NewGlobalRef(clz));
+    }
     if (registerNatives(env) != JNI_TRUE) {
         LOGD("ERROR: registerNatives failed");
         goto bail;
@@ -241,4 +246,175 @@ Java_com_netease_acsdk_Utils_accessTest(JNIEnv *env, jclass clazz, jstring path)
     char tmp[0x10] = {0};
     sprintf(tmp, "%d", accRet);
     return env->NewStringUTF(tmp);
+}
+
+
+#include <errno.h>
+#include <sys/inotify.h>
+#include <pthread.h>
+#include <map>
+#define EVENT_SIZE (sizeof (struct inotify_event))
+#define EVENT_BUFF_LEN (1024 * EVENT_SIZE)
+typedef void (*start_inotify_callback)(const char *path, inotify_event *event);
+#define HIDDEN_API __attribute__((visibility("hidden")))
+class Watch {
+    struct wd_elem{
+        int pd;
+        string name;
+    };
+    map<int, wd_elem> watch;
+public:
+    Watch() {
+        LOGD("inotify watch init");
+    }
+    void insert(int pd, const string &name, int wd) {
+        wd_elem elem = {pd, name};
+        watch[wd] = elem;
+    }
+    void cleanUp(int fd) {
+        for (map<int, wd_elem>::iterator wi = watch.begin(); wi != watch.end(); wi++) {
+            inotify_rm_watch( fd, wi->first );
+            watch.erase(wi);
+        }
+    }
+    string get(int wd) {
+        wd_elem elem;
+        {
+            auto it = watch.find(wd);
+            if(it != watch.end()){
+                elem = it->second;
+            }else{
+                return "";
+            }
+        }
+
+        return elem.pd == -1 ? elem.name : this->get(elem.pd) + "/" + elem.name;
+    }
+};
+Watch watch;
+bool inotifyWatchSwitch = false;
+int inotifyIgnore = 0;
+int inotifyFd = -1;
+void *inotifyEntry(void* callback) {
+    int event_len;                  //事件长度
+    char buffer[EVENT_BUFF_LEN];    //事件buffer
+//    LOGD("inotify_block start by block switchStatus:%d", inotifyWatchSwitch);
+    start_inotify_callback callbackImpl = (start_inotify_callback)callback;
+    while (inotifyWatchSwitch) {
+//        LOGD("inotify_block read start");
+        event_len = read(inotifyFd, buffer, EVENT_BUFF_LEN);   //读取事件
+//         LOGD("inotify_block read end event len:%d", event_len);
+        if (event_len < 0) {
+//             LOGE("inotify_block inotify_event read failed [errno:%d, desc:%s]", errno, strerror(errno));
+            continue;
+        }
+        int i = 0;
+//        LOGD("inotify_block i %d event_len %d",i,event_len);
+        while (i < event_len) {
+            struct inotify_event *event = (struct inotify_event *) &buffer[i];
+//            LOGD("inotify_block event %p event->len:%d",event, event->len);
+            if (event->len) {
+//                LOGD("inotify_block event len:%d ",event->len);
+                if(callback)
+                {
+//                    LOGD("inotify_block callback ok:%p ",callback);
+                    callbackImpl(watch.get(event->wd).c_str(),event);
+                }
+            }
+            i += EVENT_SIZE + event->len;
+            // LOGD("inotify_block next i %d event_len %d",i,event_len);
+        }
+    }
+}
+JNIEnv *get_env(int *attach) {
+    if (gJvm == NULL) return NULL;
+
+    *attach = 0;
+    JNIEnv *jni_env = NULL;
+
+    int status = gJvm->GetEnv((void **)&jni_env, JNI_VERSION_1_6);
+
+    if (status == JNI_EDETACHED || jni_env == NULL) {
+        status = gJvm->AttachCurrentThread(&jni_env, NULL);
+        if (status < 0) {
+            jni_env = NULL;
+        } else {
+            *attach = 1;
+        }
+    }
+    return jni_env;
+}
+void del_env() {
+    gJvm->DetachCurrentThread();
+}
+void onFileOpen(const char* dir, inotify_event *event) {
+//    LOGD("onFileOpen:%s %p", dir, event);
+    if (event->mask & IN_OPEN) {
+        char tmp[PATH_MAX] = {0};
+        if (sprintf(tmp, "%s/%s", dir, event->name) > 0) {
+            LOGD("inotify onFileOpen: %s", tmp);
+            int attach = 0;
+            JNIEnv *env = get_env(&attach);
+            jclass clz = gClzMainActivity;
+            jmethodID mid = env->GetStaticMethodID(clz, "sendLogData", "(Ljava/lang/String;Ljava/lang/String;)V");
+            jstring h = env->NewStringUTF("watch file result");
+            jstring data = env->NewStringUTF(tmp);
+            env->CallStaticVoidMethod(clz, mid, h, data);
+            if (attach == 1) {
+                del_env();
+            }
+        }
+    }
+}
+int inotifyInit()
+{
+    if (inotifyFd == -1)
+    {
+        inotifyFd = inotify_init();
+        if (inotifyFd == -1)
+        {
+            LOGE("inotify init errno:%d desc:%s", errno, strerror(errno));
+            return -1;
+        }
+    }
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_netease_acsdk_Utils_inotifyAddWatchPath(JNIEnv *env, jclass clazz, jstring path) {
+    inotifyInit();
+    const char* pPath = env->GetStringUTFChars(path, NULL);
+    if (inotifyFd > 0) {
+        auto wd = inotify_add_watch(inotifyFd, pPath, IN_ALL_EVENTS);
+        if (wd > 0) {
+            watch.insert(-1, pPath, wd);
+            LOGE("inotify add watch file suss:%s", pPath);
+            return 1;
+        }
+    }
+    LOGE("inotify add watch file fail:%s errno:%d errstr:%s", pPath, errno, strerror(errno));
+    return 0;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_netease_acsdk_Utils_inotifyWatchStart(JNIEnv *env, jclass clazz) {
+    pthread_t thread;
+    inotifyWatchSwitch = true;
+    int ret = pthread_create(&thread, NULL, inotifyEntry, (void*) onFileOpen);
+    if (ret != 0) {
+        LOGE("inotify watch thread create fail errno:%d desc:%s", errno, strerror(errno));
+        return 0;
+    }else {
+        LOGE("inotify watch thread create succ");
+        return 1;
+    }
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_netease_acsdk_Utils_inotifyWatchStop(JNIEnv *env, jclass clazz) {
+    inotifyWatchSwitch = false;
+    close(inotifyFd);
+    inotifyFd = -1;
+    return 0;
 }

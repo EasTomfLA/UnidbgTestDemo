@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnClearLog.setOnClickListener(this);
         findViewById(R.id.btnAccessTestPaths).setOnClickListener(this);
         etTestPaths = findViewById(R.id.etTestPaths);
+        findViewById(R.id.btnEnableInotifyWatch).setOnClickListener(this);
 
         application = getApplication();
 
@@ -141,7 +142,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnAccessTestPaths:
                 onBtnAccessPathTest();
                 break;
+            case R.id.btnEnableInotifyWatch:
+                onBtnEnableInotifyWatch();
+                break;
         }
+    }
+
+    private void onBtnEnableInotifyWatch() {
+        String paths;
+        String cfgTestFilePathFile = "/sdcard/tsPathsAccess";
+        String pathFromCfgFile = Utils.readAllFileContext(cfgTestFilePathFile);
+        if (pathFromCfgFile.isEmpty()) {
+            paths = "/sdcard";
+        } else {
+            paths = pathFromCfgFile;
+        }
+        String[] splits = paths.split(";");
+        StringBuilder sb = new StringBuilder();
+        for(String split:splits){
+            int results = Utils.addInotifyWatchPatch(split);
+            sb.append(split).append(" ========== ").append(results == 1).append("\r\n");
+        }
+        int startRet = Utils.enableInotifyWatch();
+        sb.append("start watch status").append(" ========== ").append(startRet == 1).append("\r\n");
+        sendLogData("test file access", sb.substring(0, sb.length() - 1));
     }
 
     private void onBtnAccessPathTest() {
@@ -182,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Message msg = new Message();
         msg.what = MyHandler.LOG_DATA;
         msg.obj = ret;
-        MainActivity.this.mHandler.sendMessage(msg);
+        mHandler.sendMessage(msg);
     }
 
     private void onClearLog() {

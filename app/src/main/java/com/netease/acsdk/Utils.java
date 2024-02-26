@@ -26,8 +26,18 @@ public class Utils {
         return output.toString();
     }
 
-    public static int enableInotifyWatch(String paths) {
-        return inotifyWatch(paths);
+    public static int enableInotifyWatch() {
+        inotifyWatchStop();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return inotifyWatchStart();
+    }
+
+    public static int addInotifyWatchPatch(String path) {
+        return inotifyAddWatchPath(path);
     }
 
     public static String accessTestPaths(String paths) {
@@ -55,6 +65,8 @@ public class Utils {
         return "";
     }
 
-    private native static int inotifyWatch(String paths);
+    private native static int inotifyWatchStart();
+    private native static int inotifyWatchStop();
+    private native static int inotifyAddWatchPath(String path);
     private native static String accessTest(String path);
 }
