@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnAccessTestPaths).setOnClickListener(this);
         etTestPaths = findViewById(R.id.etTestPaths);
         findViewById(R.id.btnEnableInotifyWatch).setOnClickListener(this);
+        findViewById(R.id.btnGetSU).setOnClickListener(this);
+        findViewById(R.id.btnGetDbgStatus).setOnClickListener(this);
 
         application = getApplication();
 
@@ -144,6 +146,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnEnableInotifyWatch:
                 onBtnEnableInotifyWatch();
+                break;
+            case R.id.btnGetSU:
+                onBtnGetSU();
+            case R.id.btnGetDbgStatus:
+                onBtnGetDbgStatus();
                 break;
         }
     }
@@ -196,8 +203,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static void onBtnTest() {
         Log.d(TAG, "onBtnTest");
-        SysStatus.getIdResult();
         SysStatus.getAppStaticDebugFlag(application);
+    }
+
+    private void onBtnGetDbgStatus() {
+        String status = SysStatus.getAppStaticDebugFlag(this.getApplication());
+        sendLogData("获取进程调试信息", status);
+    }
+    private void onBtnGetSU() {
+        Utils.getSUPermission();
     }
 
     private void onGetAllTaskName() {

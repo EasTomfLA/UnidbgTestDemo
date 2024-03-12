@@ -10,19 +10,20 @@ import com.netease.unidbgtestdemo.BuildConfig;
 
 public class SysStatus {
 
-    public static void getIdResult() {
-        String id = Utils.runShellCMD("id");
-        Log.d(TAG, "getIdResult:" + id);
+    public static String getIdResult() {
+        return Utils.runShellCMD("id");
     }
-    public static void getAppStaticDebugFlag(Application application) {
+    public static String getAppStaticDebugFlag(Application application) {
         // 获取应用的ApplicationInfo对象 可行
         ApplicationInfo applicationInfo = application.getApplicationInfo();
         // 检查调试标志
         boolean isDebuggable = (applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         // 输出调试标志
-        System.out.println("调试标志：" + isDebuggable);
+        StringBuilder sb = new StringBuilder();
+        sb.append("ApplicationInfo.FLAG_DEBUGGABLE：").append(isDebuggable).append("\n");
 
         isDebuggable = BuildConfig.DEBUG;
-        System.out.println("调试标志：" + isDebuggable);
+        sb.append("BuildConfig.DEBUG：").append(isDebuggable);
+        return sb.toString();
     }
 }

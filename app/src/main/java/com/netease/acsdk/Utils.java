@@ -1,6 +1,8 @@
 package com.netease.acsdk;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,10 +11,58 @@ import java.io.InputStreamReader;
 
 public class Utils {
 
+    public static void getSUPermission() {
+//        runShellCMD("su");
+        runSUCommand("");
+    }
+
+    public static String runSUCommand(String command) {
+        Process process = null;
+        String result = "";
+        DataOutputStream os = null;
+        DataInputStream is = null;
+        try {
+            process = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(process.getOutputStream());
+            is = new DataInputStream(process.getInputStream());
+            os.writeBytes(command + "\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            String line = null;
+            while ((line = is.readLine()) != null) {
+                result += line;
+            }
+            process.waitFor();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (process != null) {
+                process.destroy();
+            }
+        }
+        return result;
+    }
+
     public static String runShellCMD(String cmd) {
         StringBuilder output = new StringBuilder();
         try {
-            Process process = Runtime.getRuntime().exec("id");
+            Process process = Runtime.getRuntime().exec(cmd);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {

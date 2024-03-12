@@ -30,6 +30,16 @@
                 android:layout_height="wrap_content"
                 android:text="测试"
                 android:id="@+id/btnTest" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="获取SU权限"
+                android:id="@+id/btnGetSU" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="获取调试状态"
+                android:id="@+id/btnGetDbgStatus" />
         </LinearLayout>
 
         <LinearLayout
