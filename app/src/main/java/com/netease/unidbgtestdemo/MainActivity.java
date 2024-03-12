@@ -11,6 +11,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
 import android.os.IBinder;
@@ -62,6 +63,10 @@ import com.netease.acsdk.Utils;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String TAG = "UnidbgTestDemo";
+    public static final String LOG_FILE_NAME = "testRuntime.log";
+    public static final String LOG_FILE_PATH = Environment.getExternalStorageDirectory().getPath()
+                                                + File.separator + LOG_FILE_NAME;
+
     private static Application application;
     private static MainActivity activity;
     private static MyHandler mHandler;
@@ -149,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnGetSU:
                 onBtnGetSU();
+                break;
             case R.id.btnGetDbgStatus:
                 onBtnGetDbgStatus();
                 break;
@@ -225,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void onClearLog() {
         MainActivity.this.tvLog.setText("");
+        Utils.writeFile(LOG_FILE_PATH, "", false);
     }
 
     public Handler getHandler() {
@@ -286,6 +293,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .append("\n----------msg end----------\n")
                 .append("\n");
         tvLog.append(append);
+        Utils.writeFile(LOG_FILE_PATH, append.toString(), true);
         Log.d(TAG, "message:" + data);
     }
 

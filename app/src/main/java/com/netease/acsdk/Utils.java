@@ -115,6 +115,26 @@ public class Utils {
         return "";
     }
 
+    public static String writeFile(String path, String data, boolean append) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                String absolutePath = file.getParentFile().getAbsolutePath();
+                File parentFile = new File(absolutePath);
+                if (!parentFile.exists()) {
+                    boolean mkdirs = parentFile.mkdirs();
+                }
+            }
+            FileOutputStream fileOutputStream = new FileOutputStream(file, append);
+            fileOutputStream.write(data.getBytes());
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     private native static int inotifyWatchStart();
     private native static int inotifyWatchStop();
     private native static int inotifyAddWatchPath(String path);
