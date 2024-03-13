@@ -61,7 +61,7 @@ import com.hjq.permissions.XXPermissions;
 import com.netease.acsdk.SysStatus;
 import com.netease.acsdk.Utils;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
     public static final String TAG = "UnidbgTestDemo";
     public static final String LOG_FILE_NAME = "testRuntime.log";
     public static final String LOG_FILE_PATH = Environment.getExternalStorageDirectory().getPath()
@@ -114,8 +114,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button btnClearLog = findViewById(R.id.btnClearLog);
         btnClearLog.setOnClickListener(this);
         findViewById(R.id.btnAccessTestPaths).setOnClickListener(this);
+        findViewById(R.id.btnAccessTestPaths).setOnLongClickListener(this);
         etTestPaths = findViewById(R.id.etTestPaths);
         findViewById(R.id.btnEnableInotifyWatch).setOnClickListener(this);
+        findViewById(R.id.btnEnableInotifyWatch).setOnLongClickListener(this);
         findViewById(R.id.btnGetSU).setOnClickListener(this);
         findViewById(R.id.btnGetDbgStatus).setOnClickListener(this);
 
@@ -246,6 +248,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public Handler getHandler() {
         return mHandler;
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        Log.d(TAG, "onLongClick:" + view.getId());
+        switch (view.getId() ) {
+            case R.id.btnEnableInotifyWatch:
+                toast("在 /sdcard/tsPathsAccess 文件配置监控路径,用;分割");
+                break;
+            case R.id.btnAccessTestPaths:
+                toast("在 /sdcard/tsPathsExist 文件配置监控路径,用;分割");
+                break;
+        }
+        return false;
     }
 
     private class MyHandler extends Handler {
