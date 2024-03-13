@@ -76,13 +76,11 @@ public class Utils {
         return output.toString();
     }
 
-    public static int enableInotifyWatch() {
+    public static void stopInotifyWatch() {
         inotifyWatchStop();
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    }
+
+    public static int enableInotifyWatch() {
         return inotifyWatchStart();
     }
 

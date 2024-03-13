@@ -293,18 +293,19 @@ public:
 };
 Watch watch;
 bool inotifyWatchSwitch = false;
-int inotifyIgnore = 0;
 int inotifyFd = -1;
 void *inotifyEntry(void* callback) {
     int event_len;                  //事件长度
     char buffer[EVENT_BUFF_LEN];    //事件buffer
-//    LOGD("inotify_block start by block switchStatus:%d", inotifyWatchSwitch);
+//    LOGD("inotify_block start by block switchStatus:%d inotifyFd:%d", inotifyWatchSwitch, inotifyFd);
     start_inotify_callback callbackImpl = (start_inotify_callback)callback;
+    int count = 0;
     while (inotifyWatchSwitch) {
 //        LOGD("inotify_block read start");
         event_len = read(inotifyFd, buffer, EVENT_BUFF_LEN);   //读取事件
 //         LOGD("inotify_block read end event len:%d", event_len);
         if (event_len < 0) {
+//            if ((++count)%10 == 0)
 //             LOGE("inotify_block inotify_event read failed [errno:%d, desc:%s]", errno, strerror(errno));
             continue;
         }
@@ -348,11 +349,11 @@ void del_env() {
     gJvm->DetachCurrentThread();
 }
 void onFileOpen(const char* dir, inotify_event *event) {
-//    LOGD("onFileOpen:%s %p", dir, event);
+//    LOGE("onFileOpen:%s %p", dir, event);
     if (event->mask & IN_OPEN) {
         char tmp[PATH_MAX] = {0};
         if (sprintf(tmp, "%s/%s", dir, event->name) > 0) {
-            LOGD("inotify onFileOpen: %s", tmp);
+//            LOGE("inotify onFileOpen: %s", tmp);
             int attach = 0;
             JNIEnv *env = get_env(&attach);
             jclass clz = gClzMainActivity;
@@ -375,6 +376,8 @@ int inotifyInit()
         {
             LOGE("inotify init errno:%d desc:%s", errno, strerror(errno));
             return -1;
+        }else {
+            LOGD("inotify init suss fd:%d", inotifyFd);
         }
     }
     return 0;
@@ -383,13 +386,18 @@ int inotifyInit()
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_netease_acsdk_Utils_inotifyAddWatchPath(JNIEnv *env, jclass clazz, jstring path) {
-    inotifyInit();
+    LOGD("inotifyFd:%d", inotifyFd);
+    int intRet = inotifyInit();
+    if (-1 == intRet) {
+        LOGE("inotify init failed");
+        return intRet;
+    }
     const char* pPath = env->GetStringUTFChars(path, NULL);
     if (inotifyFd > 0) {
         auto wd = inotify_add_watch(inotifyFd, pPath, IN_ALL_EVENTS);
         if (wd > 0) {
             watch.insert(-1, pPath, wd);
-            LOGE("inotify add watch file suss:%s", pPath);
+            LOGD("inotify add watch file suss:%s inotifyFd:%d", pPath, inotifyFd);
             return 1;
         }
     }

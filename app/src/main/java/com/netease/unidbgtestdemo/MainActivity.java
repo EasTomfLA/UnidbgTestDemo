@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String TAG = "UnidbgTestDemo";
     public static final String LOG_FILE_NAME = "testRuntime.log";
     public static final String LOG_FILE_PATH = Environment.getExternalStorageDirectory().getPath()
-                                                + File.separator + LOG_FILE_NAME;
+                                                + File.separator + "demoLog" + File.separator + LOG_FILE_NAME;
 
     private static Application application;
     private static MainActivity activity;
@@ -166,14 +166,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String cfgTestFilePathFile = "/sdcard/tsPathsAccess";
         String pathFromCfgFile = Utils.readAllFileContext(cfgTestFilePathFile);
         if (pathFromCfgFile.isEmpty()) {
-            paths = "/sdcard";
+            paths = Environment.getExternalStorageDirectory().getPath();
         } else {
             paths = pathFromCfgFile;
         }
         String[] splits = paths.split(";");
         StringBuilder sb = new StringBuilder();
+        Utils.stopInotifyWatch();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for(String split:splits){
             int results = Utils.addInotifyWatchPatch(split);
+            if (results <= 0) {
+                sendLogData("test file access", "add watch path \"" + split + "\" failed");
+                return;
+            }
             sb.append(split).append(" ========== ").append(results == 1).append("\r\n");
         }
         int startRet = Utils.enableInotifyWatch();
