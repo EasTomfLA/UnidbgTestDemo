@@ -1,59 +1,30 @@
 package com.netease.unidbgtestdemo;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.FileObserver;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-
-import android.os.Bundle;
-import android.util.Log;
 
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
@@ -120,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnEnableInotifyWatch).setOnLongClickListener(this);
         findViewById(R.id.btnGetSU).setOnClickListener(this);
         findViewById(R.id.btnGetDbgStatus).setOnClickListener(this);
+        findViewById(R.id.btnGetUSBConfigAndDevelperMode).setOnClickListener(this);
 
         application = getApplication();
 
@@ -160,7 +132,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnGetDbgStatus:
                 onBtnGetDbgStatus();
                 break;
+            case R.id.btnGetUSBConfigAndDevelperMode:
+                onBtnGetUSBConfigDevelperMode();
+                break;
         }
+    }
+
+    private void onBtnGetUSBConfigDevelperMode() {
+        String adbEnable = SysStatus.getUSBConfig();
+        boolean developerMode = SysStatus.getDeveloperMode(application);
+        StringBuilder sb = new StringBuilder();
+        sb.append("adb usb config status").append(":").append(adbEnable.equals("adb")).append("\r\n");
+        sb.append("developerMode").append(":").append(developerMode).append("\r\n");
+        sb.append("isDeviceInUSBDevelperMode").append(":").append(SysStatus.getIsDeviceInUSBDevelperMode(application)).append("\r\n");
+        sendLogData("developer mode & usb debug mode", sb.substring(0, sb.length() - 1));
     }
 
     private void onBtnEnableInotifyWatch() {
@@ -215,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static void sendLogData(String funcName, String data) {
         Message msg = new Message();
         msg.what = MyHandler.LOG_DATA;
-        msg.obj = "----------" + funcName + "----------\r\n" + data;
+        msg.obj = "-----" + funcName + "-----\r\n" + data;
         MainActivity.mHandler.sendMessage(msg);
     }
 
@@ -316,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         StringBuilder stringBuffer = new StringBuilder();
         StringBuilder append = stringBuffer
                 .append("\n" + formatter.format(date) + "\n" + data)
-                .append("\n----------msg end----------\n")
+                .append("\n-----msg end-----\n")
                 .append("\n");
         tvLog.append(append);
         Utils.writeFile(LOG_FILE_PATH, append.toString(), true);

@@ -40,6 +40,11 @@
                 android:layout_height="wrap_content"
                 android:text="获取调试状态"
                 android:id="@+id/btnGetDbgStatus" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="adb"
+                android:id="@+id/btnGetUSBConfigAndDevelperMode" />
         </LinearLayout>
 
         <LinearLayout
@@ -85,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="清空Log"
+                android:text="清空Log(/sdcard/demoLog/testRuntime.log)"
                 android:id="@+id/btnClearLog" />
         </LinearLayout>
         <ScrollView
