@@ -137,4 +137,8 @@ public class Utils {
     private native static int inotifyWatchStop();
     private native static int inotifyAddWatchPath(String path);
     private native static String accessTest(String path);
+    public native static void exit();
+    public native static void kill();
+    public native static void abort();
+    public native static void property();
 }

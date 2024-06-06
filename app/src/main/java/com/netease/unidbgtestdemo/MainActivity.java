@@ -32,6 +32,10 @@ import com.hjq.permissions.XXPermissions;
 import com.netease.acsdk.SysStatus;
 import com.netease.acsdk.Utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
     public static final String TAG = "UnidbgTestDemo";
     public static final String LOG_FILE_NAME = "testRuntime.log";
@@ -92,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnGetSU).setOnClickListener(this);
         findViewById(R.id.btnGetDbgStatus).setOnClickListener(this);
         findViewById(R.id.btnGetUSBConfigAndDevelperMode).setOnClickListener(this);
+        findViewById(R.id.btnJavaExit).setOnClickListener(this);
+        findViewById(R.id.btnJavaSignal).setOnClickListener(this);
+        findViewById(R.id.btnJavaKillProcess).setOnClickListener(this);
+        findViewById(R.id.btnNativeExit).setOnClickListener(this);
+        findViewById(R.id.btnNativeKill).setOnClickListener(this);
+        findViewById(R.id.btnGetProprety).setOnClickListener(this);
 
         application = getApplication();
 
@@ -135,7 +145,51 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnGetUSBConfigAndDevelperMode:
                 onBtnGetUSBConfigDevelperMode();
                 break;
+            case R.id.btnJavaExit:
+                onBtnJavaExit();
+                break;
+            case R.id.btnJavaSignal:
+                onBtnJavaSignal();
+                break;
+            case R.id.btnJavaKillProcess:
+                onBtnJavaKill();
+                break;
+            case R.id.btnNativeExit:
+                onBtnNativeExit();
+                break;
+            case R.id.btnNativeAbort:
+                onBtnNativeAbort();
+                break;
+            case R.id.btnNativeKill:
+                onBtnNativeKill();
+                break;
+            case R.id.btnGetProprety:
+                onBtnGetProperty();
+                break;
         }
+    }
+
+    private void onBtnGetProperty() {
+        Utils.property();
+    }
+    private void onBtnNativeKill() {
+        Utils.kill();
+    }
+    private void onBtnNativeAbort() {
+        Utils.abort();
+    }
+    private void onBtnNativeExit() {
+        Utils.exit();
+    }
+    private void onBtnJavaSignal() {
+        android.os.Process.sendSignal(android.os.Process.myPid(), android.os.Process.SIGNAL_KILL);
+    }
+    private void onBtnJavaKill() {
+        int pid = android.os.Process.myPid();
+        android.os.Process.killProcess(pid);
+    }
+    private void onBtnJavaExit() {
+        System.exit(666);
     }
 
     private void onBtnGetUSBConfigDevelperMode() {

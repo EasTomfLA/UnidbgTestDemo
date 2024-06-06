@@ -236,6 +236,39 @@ jint JNI_OnLoad(JavaVM* vm, void* nothing)
 extern "C" JNIEXPORT void exportFunction() {
     LOGD("hello im exportFunction");
 }
+
+#include <sys/system_properties.h>
+
+__attribute__((noinline))  void exitiii() {
+    exit(11);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_netease_acsdk_Utils_exit(JNIEnv *env, jclass clazz) {
+    exitiii();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_netease_acsdk_Utils_kill(JNIEnv *env, jclass clazz) {
+    kill(getpid(), 999);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_netease_acsdk_Utils_abort(JNIEnv *env, jclass clazz) {
+    abort();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_netease_acsdk_Utils_property(JNIEnv *env, jclass clazz) {
+    char value[PROP_VALUE_MAX] = {0};
+    int nnn = __system_property_get("ro.debuggable", value);
+    LOGD("ro.debuggable addr:%p %s", &value, value);
+}
+
 extern "C"
 JNIEXPORT jstring JNICALL
 Java_com_netease_acsdk_Utils_accessTest(JNIEnv *env, jclass clazz, jstring path) {
