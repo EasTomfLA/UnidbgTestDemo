@@ -381,22 +381,35 @@ JNIEnv *get_env(int *attach) {
 void del_env() {
     gJvm->DetachCurrentThread();
 }
+void sendToLog(const char* head, const char* content) {
+    int attach = 0;
+    JNIEnv *env = get_env(&attach);
+    jclass clz = gClzMainActivity;
+    jmethodID mid = env->GetStaticMethodID(clz, "sendLogData", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jstring h = env->NewStringUTF(head);
+    jstring data = env->NewStringUTF(content);
+    env->CallStaticVoidMethod(clz, mid, h, data);
+    if (attach == 1) {
+        del_env();
+    }
+}
 void onFileOpen(const char* dir, inotify_event *event) {
 //    LOGE("onFileOpen:%s %p", dir, event);
     if (event->mask & IN_OPEN) {
         char tmp[PATH_MAX] = {0};
         if (sprintf(tmp, "%s/%s", dir, event->name) > 0) {
 //            LOGE("inotify onFileOpen: %s", tmp);
-            int attach = 0;
-            JNIEnv *env = get_env(&attach);
-            jclass clz = gClzMainActivity;
-            jmethodID mid = env->GetStaticMethodID(clz, "sendLogData", "(Ljava/lang/String;Ljava/lang/String;)V");
-            jstring h = env->NewStringUTF("watch file result");
-            jstring data = env->NewStringUTF(tmp);
-            env->CallStaticVoidMethod(clz, mid, h, data);
-            if (attach == 1) {
-                del_env();
-            }
+            sendToLog("watch file result", tmp);
+//            int attach = 0;
+//            JNIEnv *env = get_env(&attach);
+//            jclass clz = gClzMainActivity;
+//            jmethodID mid = env->GetStaticMethodID(clz, "sendLogData", "(Ljava/lang/String;Ljava/lang/String;)V");
+//            jstring h = env->NewStringUTF("watch file result");
+//            jstring data = env->NewStringUTF(tmp);
+//            env->CallStaticVoidMethod(clz, mid, h, data);
+//            if (attach == 1) {
+//                del_env();
+//            }
         }
     }
 }
@@ -458,4 +471,28 @@ Java_com_netease_acsdk_Utils_inotifyWatchStop(JNIEnv *env, jclass clazz) {
     close(inotifyFd);
     inotifyFd = -1;
     return 0;
+}
+
+void *antiThread(void* callback) {
+    for (int i = 0; i < 10; i++) {
+        char buf[255] = {0};
+        sprintf(buf, "anti thread running %d", i + 1);
+        LOGD("%s", buf);
+        sendToLog("antiThread", buf);
+        sleep(1);
+    }
+    LOGD("anti thread exit");
+    return nullptr;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_netease_unidbgtestdemo_MainActivity_pthreadTest(JNIEnv *env, jclass clazz) {
+    pthread_t thread;
+    int ret = pthread_create(&thread, NULL, antiThread, nullptr);
+    if (ret != 0) {
+        LOGE("inotify watch thread create fail errno:%d desc:%s", errno, strerror(errno));
+    }else {
+        LOGD("inotify watch thread create succ");
+    }
 }

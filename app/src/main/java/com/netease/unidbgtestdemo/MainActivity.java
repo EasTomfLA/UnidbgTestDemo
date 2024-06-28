@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnNativeExit).setOnClickListener(this);
         findViewById(R.id.btnNativeKill).setOnClickListener(this);
         findViewById(R.id.btnGetProprety).setOnClickListener(this);
+        findViewById(R.id.btnAntiThread).setOnClickListener(this);
 
         application = getApplication();
 
@@ -165,6 +166,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnGetProprety:
                 onBtnGetProperty();
+                break;
+            case R.id.btnAntiThread:
+                pthreadTest();
                 break;
         }
     }
@@ -398,4 +402,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static native String stringFromJNIDynReg();
     public static native int getStringLen(String str);
     public static native String usingRefJava();
+
+    public static native void pthreadTest();
 }
