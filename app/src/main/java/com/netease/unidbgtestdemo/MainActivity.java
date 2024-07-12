@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         System.loadLibrary("nativetest");
     }
 
+    public static MainActivity getActivity() {
+        return activity;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnNativeKill).setOnClickListener(this);
         findViewById(R.id.btnGetProprety).setOnClickListener(this);
         findViewById(R.id.btnAntiThread).setOnClickListener(this);
+        findViewById(R.id.btnOpenAc2).setOnClickListener(this);
 
         application = getApplication();
 
@@ -169,6 +174,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnAntiThread:
                 pthreadTest();
+                break;
+            case R.id.btnOpenAc2: {
+                Intent intent = new Intent(activity, Activity2.class);
+                startActivity(intent);
+            }
                 break;
         }
     }
