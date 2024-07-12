@@ -29,6 +29,73 @@
                 android:id="@+id/btnBack" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="获取调试状态"
+                android:id="@+id/btnGetDbgStatus" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="adb"
+                android:id="@+id/btnGetUSBConfigAndDevelperMode" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="getproperty"
+                android:id="@+id/btnGetProprety" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="thr"
+                android:id="@+id/btnAntiThread" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="exit"
+                android:id="@+id/btnNativeExit" />
+            <Button
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="abort"
+                android:id="@+id/btnNativeAbort" />
+            <Button
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:text="kill"
+                android:id="@+id/btnNativeKill" />
+            <Button
+                android:layout_width="70dp"
+                android:layout_height="wrap_content"
+                android:text="jexit"
+                android:id="@+id/btnJavaExit" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="killPro"
+                android:id="@+id/btnJavaKillProcess" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign"
+                android:id="@+id/btnJavaSignal" />
+        </LinearLayout>
+
 
     </LinearLayout>
 

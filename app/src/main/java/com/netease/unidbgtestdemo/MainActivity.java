@@ -98,15 +98,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnEnableInotifyWatch).setOnClickListener(this);
         findViewById(R.id.btnEnableInotifyWatch).setOnLongClickListener(this);
         findViewById(R.id.btnGetSU).setOnClickListener(this);
-        findViewById(R.id.btnGetDbgStatus).setOnClickListener(this);
-        findViewById(R.id.btnGetUSBConfigAndDevelperMode).setOnClickListener(this);
-        findViewById(R.id.btnJavaExit).setOnClickListener(this);
-        findViewById(R.id.btnJavaSignal).setOnClickListener(this);
-        findViewById(R.id.btnJavaKillProcess).setOnClickListener(this);
-        findViewById(R.id.btnNativeExit).setOnClickListener(this);
-        findViewById(R.id.btnNativeKill).setOnClickListener(this);
-        findViewById(R.id.btnGetProprety).setOnClickListener(this);
-        findViewById(R.id.btnAntiThread).setOnClickListener(this);
         findViewById(R.id.btnOpenAc2).setOnClickListener(this);
 
         application = getApplication();
@@ -183,30 +174,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void onBtnGetProperty() {
+    public void onBtnGetProperty() {
         Utils.property();
     }
-    private void onBtnNativeKill() {
+    public void onBtnNativeKill() {
         Utils.kill();
     }
-    private void onBtnNativeAbort() {
+    public void onBtnNativeAbort() {
         Utils.abort();
     }
-    private void onBtnNativeExit() {
+    public void onBtnNativeExit() {
         Utils.exit();
     }
-    private void onBtnJavaSignal() {
+    public void onBtnJavaSignal() {
         android.os.Process.sendSignal(android.os.Process.myPid(), android.os.Process.SIGNAL_KILL);
     }
-    private void onBtnJavaKill() {
+    public void onBtnJavaKill() {
         int pid = android.os.Process.myPid();
         android.os.Process.killProcess(pid);
     }
-    private void onBtnJavaExit() {
+    public void onBtnJavaExit() {
         System.exit(666);
     }
 
-    private void onBtnGetUSBConfigDevelperMode() {
+    public void onBtnGetUSBConfigDevelperMode() {
         String adbEnable = SysStatus.getUSBConfig();
         boolean developerMode = SysStatus.getDeveloperMode(application);
         StringBuilder sb = new StringBuilder();
@@ -277,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SysStatus.getAppStaticDebugFlag(application);
     }
 
-    private void onBtnGetDbgStatus() {
+    public void onBtnGetDbgStatus() {
         String status = SysStatus.getAppStaticDebugFlag(this.getApplication());
         sendLogData("获取进程调试信息", status);
     }

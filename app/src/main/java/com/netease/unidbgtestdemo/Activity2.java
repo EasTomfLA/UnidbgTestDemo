@@ -42,6 +42,17 @@ public class Activity2 extends AppCompatActivity implements View.OnClickListener
 
         findViewById(R.id.btnTest2).setOnClickListener(this);
         findViewById(R.id.btnBack).setOnClickListener(this);
+
+        findViewById(R.id.btnGetDbgStatus).setOnClickListener(this);
+        findViewById(R.id.btnGetUSBConfigAndDevelperMode).setOnClickListener(this);
+        findViewById(R.id.btnJavaExit).setOnClickListener(this);
+        findViewById(R.id.btnJavaSignal).setOnClickListener(this);
+        findViewById(R.id.btnJavaKillProcess).setOnClickListener(this);
+        findViewById(R.id.btnNativeExit).setOnClickListener(this);
+        findViewById(R.id.btnNativeKill).setOnClickListener(this);
+        findViewById(R.id.btnNativeAbort).setOnClickListener(this);
+        findViewById(R.id.btnGetProprety).setOnClickListener(this);
+        findViewById(R.id.btnAntiThread).setOnClickListener(this);
     }
     @Override
     public void onClick(View view) {
@@ -53,6 +64,28 @@ public class Activity2 extends AppCompatActivity implements View.OnClickListener
             case R.id.btnBack:
                 finish();
                 break;
+            case R.id.btnGetDbgStatus:
+                MainActivity.getActivity().onBtnGetDbgStatus();
+                break;
+            case R.id.btnGetUSBConfigAndDevelperMode:
+                MainActivity.getActivity().onBtnGetUSBConfigDevelperMode();
+                break;
+            case R.id.btnJavaExit:
+                MainActivity.getActivity().onBtnJavaExit(); break;
+            case R.id.btnJavaSignal:
+                MainActivity.getActivity().onBtnJavaSignal(); break;
+            case R.id.btnJavaKillProcess:
+                MainActivity.getActivity().onBtnJavaKill(); break;
+            case R.id.btnNativeExit:
+                MainActivity.getActivity().onBtnNativeExit(); break;
+            case R.id.btnNativeKill:
+                MainActivity.getActivity().onBtnNativeKill(); break;
+            case R.id.btnNativeAbort:
+                MainActivity.getActivity().onBtnNativeAbort(); break;
+            case R.id.btnGetProprety:
+                MainActivity.getActivity().onBtnGetProperty(); break;
+            case R.id.btnAntiThread:
+                MainActivity.pthreadTest(); break;
         }
     }
 }
