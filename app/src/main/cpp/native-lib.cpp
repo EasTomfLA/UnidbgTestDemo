@@ -192,6 +192,47 @@ jint initImpl(JNIEnv *env, jclass clz, jint cmdId, jobject params) {
     gettimeofday(&tv, nullptr);
     LOGD("initImpl gettimeofday.tv_sec:%ld", tv.tv_sec);
     LOGD("initImpl gettimeofday.tv_usec:%ld", tv.tv_usec);
+
+    // 获取 ActivityThread 类的 Class 对象
+    jclass activityThreadCls = env->FindClass("android/app/ActivityThread");
+
+    // 获取 currentActivityThread 方法的 ID
+    jmethodID currentActivityThreadMethodId = env->GetStaticMethodID(activityThreadCls, "currentActivityThread", "()Landroid/app/ActivityThread;");
+
+    // 调用 currentActivityThread 方法
+    jobject activityThreadObj = env->CallStaticObjectMethod(activityThreadCls, currentActivityThreadMethodId);
+
+    // 获取 getApplication 方法的 ID
+    jmethodID getApplicationMethodId = env->GetMethodID(activityThreadCls, "getApplication", "()Landroid/app/Application;");
+
+    // 调用 getApplication 方法
+    jobject applicationObj = env->CallObjectMethod(activityThreadObj, getApplicationMethodId);
+    jclass clzApplication = env->GetObjectClass(applicationObj);
+
+    // 获取 getApplicationContext 方法的 ID
+    jclass contextCls = env->FindClass("android/content/Context");
+    jmethodID getApplicationContextMethodId = env->GetMethodID(clzApplication, "getApplicationContext", "()Landroid/content/Context;");
+
+    // 调用 getApplicationContext 方法
+    jobject contextObj = env->CallObjectMethod(applicationObj, getApplicationContextMethodId);
+
+    // getPackageCodePath
+    jmethodID mIdGPCP = env->GetMethodID(contextCls, "getPackageCodePath", "()Ljava/lang/String;");
+    jstring jsPCP = (jstring)env->CallObjectMethod(contextObj, mIdGPCP);
+    const char* packageCodePath = env->GetStringUTFChars(jsPCP, NULL);
+    LOGD("package code path=%s", packageCodePath);
+
+    jmethodID mIdGPN = env->GetMethodID(contextCls, "getPackageName", "()Ljava/lang/String;");
+    jstring jsPN = (jstring)env->CallObjectMethod(contextObj, mIdGPN);
+    const char* packageName = env->GetStringUTFChars(jsPN, NULL);
+    LOGD("package name=%s", packageName);
+    jmethodID mIdGAssets = env->GetMethodID(contextCls, "getAssets", "()Landroid/content/res/AssetManager;");
+    jobject objAssets = env->CallObjectMethod(contextObj, mIdGAssets);
+    jclass clzAssets = env->GetObjectClass(objAssets);
+    jmethodID mIdToString = env->GetMethodID(clzAssets, "toString", "()Ljava/lang/String;");
+    jstring jsAsserts = (jstring)env->CallObjectMethod(objAssets, mIdToString);
+    const char* assetsName = env->GetStringUTFChars(jsAsserts, NULL);
+    LOGD("asstes name=%s", assetsName);
     return 0;
 }
 
@@ -507,4 +548,19 @@ Java_com_netease_unidbgtestdemo_MainActivity_pthreadTest(JNIEnv *env, jclass cla
     }else {
         LOGD("inotify watch thread create succ");
     }
+}
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_com_netease_unidbgtestdemo_DemoTest_BoolTest(JNIEnv *env, jobject thiz) {
+
+    jclass clzDemoTest = env->GetObjectClass(thiz);
+    jfieldID fIdBooleanInstan = env->GetFieldID(clzDemoTest, "aBooleanInstan", "Z");
+
+    jboolean objBooleanInstan = env->GetBooleanField(thiz, fIdBooleanInstan);
+    if (objBooleanInstan == JNI_TRUE) {
+        LOGD("aBooleanInstan value=true");
+    } else {
+        LOGD("aBooleanInstan value=false");
+    }
+    return objBooleanInstan;
 }

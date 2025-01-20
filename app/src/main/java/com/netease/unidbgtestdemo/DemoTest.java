@@ -1,12 +1,18 @@
 package com.netease.unidbgtestdemo;
 
+import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.util.Log;
 
 public class DemoTest {
-    public String TAG = "";
+    public String TAG = DemoTest.class.getSimpleName();
     public static String TAGSTATIC = "staticTag";
     public static final String TAGSTATICFINAL = "staticTagFinal";
     public final String TAGFINAL = "tagFinal";
+
+    private boolean aBooleanInstan = true;
+    private static boolean aBooleanStatic = true;
+    public static boolean aBooleanStaticPub = true;
 
     DemoTest() {
         TAG = "DefaultTag";
@@ -16,6 +22,8 @@ public class DemoTest {
         TAG = tag;
         Log.d(TAG, "constructor with tag:" + TAG);
     }
+
+    public native boolean BoolTest();
 
     public native int myAdd(int n, int n2);
 
@@ -35,5 +43,23 @@ public class DemoTest {
             default:
                 return "default";
         }
+    }
+    public void testMyMethod() {
+        Log.d(TAG, "getPackageManager=" + getPackageManager().toString());
+        Log.d(TAG, "getPackageName=" +getPackageName());
+        Log.d(TAG, "getPackageCodePath=" +getPackageCodePath());
+        Log.d(TAG, "getPackageManager=" + getPackageManager().toString());
+    }
+    public String getPackageCodePath() {
+       return MainActivity.getActivity().getPackageCodePath();
+    }
+    public String getPackageName() {
+        return MainActivity.getActivity().getPackageName();
+    }
+    public AssetManager getAssetsManager() {
+        return MainActivity.getActivity().getAssets();
+    }
+    public PackageManager getPackageManager() {
+        return MainActivity.getActivity().getPackageManager();
     }
 }

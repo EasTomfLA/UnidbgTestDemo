@@ -101,12 +101,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btnOpenAc2).setOnClickListener(this);
 
         application = getApplication();
-
         Log.d(TAG, stringFromJNI());
         Log.d(TAG, stringFromJNIDynReg());
         Log.d(TAG, "hello world len:" + getStringLen("hello world"));
-        Log.d(TAG, "myAdd(1,2)=" + new DemoTest().myAdd(1,2));
+        DemoTest demoTest = new DemoTest();
+        Log.d(TAG, "myAdd(1,2)=" + demoTest.myAdd(1,2));
         Log.d(TAG, "pkgName:" + usingRefJava());
+        Log.d(TAG, "getPackageCodePath()=" + demoTest.getPackageCodePath());
+        Log.d(TAG, "getAssetsManager()=" + demoTest.getAssetsManager());
+        Log.d(TAG, "getPackageName()=" + demoTest.getPackageName());
+        Log.d(TAG, "getPackageManager()=" + demoTest.getPackageManager());
         DemoTest.init(1024, new Object[]{ "this is key", 2048});
     }
 
