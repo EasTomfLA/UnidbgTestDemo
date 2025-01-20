@@ -11,14 +11,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--        <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Hello World!"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,16 +35,6 @@
                 android:layout_height="wrap_content"
                 android:text="获取SU权限"
                 android:id="@+id/btnGetSU" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="获取调试状态"
-                android:id="@+id/btnGetDbgStatus" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="adb"
-                android:id="@+id/btnGetUSBConfigAndDevelperMode" />
         </LinearLayout>
 
         <LinearLayout
@@ -60,23 +50,18 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="getproperty"
-                android:id="@+id/btnGetProprety" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="inotify监控"
                 android:id="@+id/btnEnableInotifyWatch" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="open ac2"
+                android:id="@+id/btnOpenAc2" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="thr"
-                android:id="@+id/btnAntiThread" />
         </LinearLayout>
 
         <LinearLayout
@@ -84,36 +69,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="exit"
-                android:id="@+id/btnNativeExit" />
-            <Button
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="abort"
-                android:id="@+id/btnNativeAbort" />
-            <Button
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:text="kill"
-                android:id="@+id/btnNativeKill" />
-            <Button
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="jexit"
-                android:id="@+id/btnJavaExit" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="killPro"
-                android:id="@+id/btnJavaKillProcess" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sign"
-                android:id="@+id/btnJavaSignal" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

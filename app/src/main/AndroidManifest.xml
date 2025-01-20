@@ -25,6 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activity2"
+            android:theme="@style/AppTheme"
+            android:exported="true">
+        </activity>
         <service android:name=".PackagesListService"
             tools:ignore="Instantiatable" />
         <meta-data

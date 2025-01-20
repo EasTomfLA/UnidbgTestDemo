@@ -1,5 +1,7 @@
 package com.netease.acsdk;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -121,7 +123,10 @@ public class Utils {
                 File parentFile = new File(absolutePath);
                 if (!parentFile.exists()) {
                     boolean mkdirs = parentFile.mkdirs();
+                    Log.d(Utils.class.getSimpleName(), absolutePath + " mkdirs ret=" + mkdirs);
                 }
+                boolean newFile = file.createNewFile();
+                Log.d(Utils.class.getSimpleName(), "create file ret=" + newFile);
             }
             FileOutputStream fileOutputStream = new FileOutputStream(file, append);
             fileOutputStream.write(data.getBytes());
