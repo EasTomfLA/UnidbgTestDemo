@@ -186,9 +186,19 @@ jint myAddImpl(JNIEnv *env, jobject obj, jint n1, jint n2) {
     return n1 + n2;
 }
 
+jint initImpl(JNIEnv *env, jclass clz, jint cmdId, jobject params) {
+    LOGD("initImpl start");
+    timeval tv;
+    gettimeofday(&tv, nullptr);
+    LOGD("initImpl gettimeofday.tv_sec:%ld", tv.tv_sec);
+    LOGD("initImpl gettimeofday.tv_usec:%ld", tv.tv_usec);
+    return 0;
+}
+
 static const char *classPathDemoTest = "com/netease/unidbgtestdemo/DemoTest";
 static JNINativeMethod methodsDemoTest[] = {
         {"myAdd", "(II)I", (void*) myAddImpl },
+        {"init", "(I[Ljava/lang/Object;)I", (void*) initImpl },
 };
 
 static int registerNatives(JNIEnv* env)
@@ -229,7 +239,7 @@ jint JNI_OnLoad(JavaVM* vm, void* nothing)
 
     bail:
 
-    LOGD("lalala:%d", myAddNoExport(1, 3));
+    LOGD("lalala myAddNoExport(1,2)=%d", myAddNoExport(1, 2));
     return result;
 }
 
@@ -246,6 +256,7 @@ __attribute__((noinline))  void exitiii() {
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_netease_acsdk_Utils_exit(JNIEnv *env, jclass clazz) {
+    // https://bbs.kanxue.com/thread-280754.htm
     exitiii();
 }
 
@@ -489,6 +500,7 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_netease_unidbgtestdemo_MainActivity_pthreadTest(JNIEnv *env, jclass clazz) {
     pthread_t thread;
+    // https://bbs.kanxue.com/thread-277034-1.htm
     int ret = pthread_create(&thread, NULL, antiThread, nullptr);
     if (ret != 0) {
         LOGE("inotify watch thread create fail errno:%d desc:%s", errno, strerror(errno));

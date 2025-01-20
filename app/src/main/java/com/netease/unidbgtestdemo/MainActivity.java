@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "hello world len:" + getStringLen("hello world"));
         Log.d(TAG, "myAdd(1,2)=" + new DemoTest().myAdd(1,2));
         Log.d(TAG, "pkgName:" + usingRefJava());
+        DemoTest.init(1024, new Object[]{ "this is key", 2048});
     }
 
     public void toast(String content) {
