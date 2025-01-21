@@ -27,6 +27,7 @@ public class DemoTest {
 
     public native int myAdd(int n, int n2);
 
+    public static native byte[] encrypt(byte[] dateInput, int n);
     public static native int init(int cmdId, Object[] objects);
     public static String getString(int n) {
         switch(n) {
@@ -61,5 +62,17 @@ public class DemoTest {
     }
     public PackageManager getPackageManager() {
         return MainActivity.getActivity().getPackageManager();
+    }
+
+    public static String byteArrayToHexString(byte[] byteArray) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : byteArray) {
+            String hex = Integer.toHexString(b & 0xFF);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }

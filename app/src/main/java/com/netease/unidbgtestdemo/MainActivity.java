@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "getPackageName()=" + demoTest.getPackageName());
         Log.d(TAG, "getPackageManager()=" + demoTest.getPackageManager());
         DemoTest.init(1024, new Object[]{ "this is key", 2048});
+        Log.d(TAG, "DemoTest.encrypt=" + DemoTest.byteArrayToHexString(DemoTest.encrypt("hello".getBytes(), 1)));
     }
 
     public void toast(String content) {

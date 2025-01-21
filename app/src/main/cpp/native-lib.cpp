@@ -586,3 +586,31 @@ Java_com_netease_unidbgtestdemo_DemoTest_BoolTest(JNIEnv *env, jobject thiz) {
     }
     return objBooleanInstan;
 }
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_com_netease_unidbgtestdemo_DemoTest_encrypt(JNIEnv *env, jclass clazz, jbyteArray date_input,
+                                                 jint n) {
+    // 获取数组长度
+    jsize length = (env)->GetArrayLength(date_input);
+
+    // 分配内存来保存数组数据
+    jbyte *data = (env)->GetByteArrayElements(date_input, NULL);
+
+    // 将 jbyte 数组转换为 C++ 的 byte 数组
+    unsigned char *byteData = reinterpret_cast<unsigned char *>(data);
+
+    // 使用 byte 数组进行加密操作
+    // ...
+
+    // 创建新的字节数组来保存加密后的数据
+    jbyteArray encrypted_data = (env)->NewByteArray(length);
+
+    // 将加密后的数据复制到新的字节数组中
+    (env)->SetByteArrayRegion(encrypted_data, 0, length, reinterpret_cast<jbyte *>(byteData));
+
+    // 释放内存
+    (env)->ReleaseByteArrayElements(date_input, data, 0);
+
+    return encrypted_data;
+
+}
