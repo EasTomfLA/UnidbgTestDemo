@@ -186,8 +186,30 @@ jint myAddImpl(JNIEnv *env, jobject obj, jint n1, jint n2) {
     return n1 + n2;
 }
 
-jint initImpl(JNIEnv *env, jclass clz, jint cmdId, jobject params) {
+jint initImpl(JNIEnv *env, jclass clz, jint cmdId, jobjectArray objects) {
     LOGD("initImpl start");
+
+    // 获取数组长度
+    jsize length = env->GetArrayLength(objects);
+
+    // 获取数组元素
+    jstring keyString = (jstring) (env)->GetObjectArrayElement(objects, 0);
+    jobject objInt = (jobject) env->GetObjectArrayElement(objects, 1);
+    jclass clzInt = env->GetObjectClass(objInt);
+    jint intValue = env->CallIntMethod(objInt, env->GetMethodID(clzInt, "intValue", "()I"));
+
+    // 将字符串对象转换为 C 字符串
+    const char *key = (env)->GetStringUTFChars(keyString, NULL);
+    LOGD("init p1=%s p2=%d", key, intValue);
+
+    // 使用参数值进行后续处理
+    // ...
+
+    // 释放资源
+    (env)->ReleaseStringUTFChars(keyString, key);
+    env->DeleteLocalRef(keyString);
+    env->DeleteLocalRef(objInt);
+
     timeval tv;
     gettimeofday(&tv, nullptr);
     LOGD("initImpl gettimeofday.tv_sec:%ld", tv.tv_sec);
