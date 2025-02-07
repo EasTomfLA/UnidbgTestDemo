@@ -16,6 +16,18 @@
 void testEgid();
 void get_ld_debug_env();
 
+extern "C" {
+// https://ckcat.github.io/2021/02/22/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95so/
+// .init_proc => .init_array => JNI_OnLoad
+void _init(void) { // EXPORT .init_proc
+    LOGD("_init");
+}
+}
+__attribute__((constructor))
+void test_constructor() { // .init_array
+    LOGD("test_constructor");
+}
+
 using namespace std;
 string& trim(string &s) {
     if (s.empty())
