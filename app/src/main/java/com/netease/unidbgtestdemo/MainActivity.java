@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -19,6 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -62,28 +63,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         activity = this;
 
-        XXPermissions.with(this).permission(Permission.Group.STORAGE)
-                .request(new OnPermissionCallback() {
-                    @Override
-                    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
-                        if (!allGranted) {
-                            toast("获取部分权限成功，但部分权限未正常授予");
-                            return;
-                        }
-                        toast("获取存储卡权限成功");
-                    }
-
-                    @Override
-                    public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
-                        if (doNotAskAgain) {
-                            toast("被永久拒绝授权，请手动授予存储卡权限");
-                            // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                            XXPermissions.startPermissionActivity(activity, permissions);
-                        } else {
-                            toast("获取存储卡权限失败");
-                        }
-                    }
-                });
 
         mHandler = new MyHandler(this);
         Button btnTest = findViewById(R.id.btnTest);
